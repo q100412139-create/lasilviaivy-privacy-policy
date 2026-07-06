@@ -22,6 +22,14 @@ import pyperclip
 CONFIG_PATH = Path(__file__).with_name("config.json")
 EXAMPLE_CONFIG_PATH = Path(__file__).with_name("config.example.json")
 
+CALIBRATION_POINTS = [
+    ("chatgpt_prompt_box", "ChatGPT 网页输入框中心位置"),
+    ("doubao_prompt_box", "豆包输入框中心位置"),
+    ("doubao_generate_button", "豆包生成按钮位置"),
+    ("doubao_image_hover_point", "豆包图片区域/下载按钮出现前需要悬停的位置"),
+    ("doubao_download_button", "豆包下载按钮位置"),
+]
+
 pyautogui.FAILSAFE = True
 pyautogui.PAUSE = 0.35
 
@@ -44,6 +52,29 @@ def show_mouse_position() -> None:
             time.sleep(0.1)
     except KeyboardInterrupt:
         print("\n已结束坐标显示。")
+
+
+def calibrate_config() -> None:
+    if CONFIG_PATH.exists():
+        config = json.loads(CONFIG_PATH.read_text(encoding="utf-8"))
+    else:
+        config = json.loads(EXAMPLE_CONFIG_PATH.read_text(encoding="utf-8"))
+
+    print("准备记录坐标。每一步都把鼠标放到提示的位置，然后回到这个窗口按 Enter。")
+    print("如果想取消，请按 Ctrl+C。")
+
+    for key, label in CALIBRATION_POINTS:
+        input(f"\n请把鼠标放到：{label}，然后按 Enter 记录坐标...")
+        x, y = pyautogui.position()
+        config[key] = [x, y]
+        print(f"已记录 {key}: [{x}, {y}]")
+
+    CONFIG_PATH.write_text(
+        json.dumps(config, ensure_ascii=False, indent=2) + "\n",
+        encoding="utf-8",
+    )
+    print(f"\n已保存到 {CONFIG_PATH}。你可以运行：")
+    print(".venv\\Scripts\\python.exe doubao_chatgpt_auto.py")
 
 
 def activate_window(keyword: str) -> None:
@@ -128,6 +159,19 @@ def generate_in_doubao(prompt: str, config: dict[str, Any], index: int) -> None:
     print(f"[{index}] 等待豆包生成：{wait_seconds} 秒")
     time.sleep(wait_seconds)
 
+    download_targets = config.get("doubao_download_targets") or []
+    if download_targets:
+        for target in download_targets:
+            hover_point = target.get("hover")
+            download_button = target.get("download")
+            if hover_point:
+                pyautogui.moveTo(hover_point[0], hover_point[1])
+                time.sleep(0.8)
+            if download_button:
+                click_point(download_button)
+                time.sleep(int(config.get("after_download_wait_seconds", 5)))
+        return
+
     hover_point = config.get("doubao_image_hover_point")
     if hover_point:
         pyautogui.moveTo(hover_point[0], hover_point[1])
@@ -159,10 +203,15 @@ def run() -> None:
 def main() -> int:
     parser = argparse.ArgumentParser(description="ChatGPT 到豆包客户端图片生成下载自动化")
     parser.add_argument("--position", action="store_true", help="持续显示鼠标坐标，用于校准 config.json")
+    parser.add_argument("--calibrate-config", action="store_true", help="按提示逐项记录鼠标坐标并写入 config.json")
     args = parser.parse_args()
 
     if args.position:
         show_mouse_position()
+        return 0
+
+    if args.calibrate_config:
+        calibrate_config()
         return 0
 
     try:
