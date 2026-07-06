@@ -101,6 +101,16 @@ def ask_chatgpt(config: dict[str, Any]) -> str:
     paste_text(config["prompt_request"])
     pyautogui.press("enter")
     time.sleep(int(config.get("chatgpt_wait_seconds", 70)))
+
+    batches = int(config.get("chatgpt_batches", 1))
+    followup_prompt = config.get("chatgpt_followup_prompt", "继续")
+    for batch_index in range(2, batches + 1):
+        print(f"正在请求 ChatGPT 继续生成第 {batch_index}/{batches} 组……")
+        click_point(config["chatgpt_prompt_box"])
+        paste_text(followup_prompt)
+        pyautogui.press("enter")
+        time.sleep(int(config.get("chatgpt_wait_seconds", 70)))
+
     return copy_chatgpt_answer(config)
 
 
