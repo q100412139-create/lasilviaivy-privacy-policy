@@ -1,15 +1,33 @@
 {
-  "count": 10,
+  "count": 150,
   "chatgpt_window_keyword": "ChatGPT",
   "doubao_window_keyword": "豆包",
-  "chatgpt_prompt_box": [720, 940],
-  "doubao_prompt_box": [760, 930],
-  "doubao_generate_button": [1420, 930],
-  "doubao_image_hover_point": [960, 520],
-  "doubao_download_button": [1260, 520],
+  "chatgpt_prompt_box": [
+    720,
+    940
+  ],
+  "doubao_prompt_box": [
+    760,
+    930
+  ],
+  "doubao_generate_button": [
+    1420,
+    930
+  ],
+  "doubao_image_hover_point": [
+    960,
+    520
+  ],
+  "doubao_download_button": [
+    1260,
+    520
+  ],
   "chatgpt_wait_seconds": 70,
   "doubao_generation_wait_seconds": 90,
   "after_download_wait_seconds": 5,
-  "prompt_request": "请为豆包图片生成写10个高质量中文提示词。要求：每条单独一行；不要编号；不要解释；每条包含主体、场景、风格、光线、构图、画幅比例。主题：商业可用的精美图片。",
-  "copy_strategy": "select_all_page"
+  "prompt_request": "主题：胖壮男男伴侣。请按这个聊天里已经确定的规则，生成第1组/15组，每组10个豆包图片生成提示词；每条单独编号，直接给提示词，不要额外解释。",
+  "copy_strategy": "select_all_page",
+  "doubao_download_targets": [],
+  "chatgpt_batches": 15,
+  "chatgpt_followup_prompt": "继续，按同样规则再生成下一组10个提示词。"
 }
